@@ -30,6 +30,10 @@ services:
     volumes:
       - ${MOUNT_POINT:?Base folder of the repository}:/home/builder/sources:ro
       - builds:/home/builder/builds
+      - ~/.ssh/known_hosts:/home/builder/.ssh/known_hosts:ro
+      - ${SSH_AUTH_SOCK_LOCATION:-/dev/null}:${SSH_AUTH_SOCK_LOCATION:-/dev/null}
+    environment:
+      - SSH_AUTH_SOCK=${SSH_AUTH_SOCK_LOCATION:-}
     entrypoint: cmake --build ../builds/${BUILD_FOLDER:?Build folder inside the persistent volume}
 
   # Shell service
