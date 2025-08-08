@@ -23,6 +23,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install \
        unzip \
        libssl-dev \
        gdb \
+       autoconf automake \
+       libpcre2-dev \
+       bison \
        && rm -rf /var/lib/apt/lists/*
 
 # Install more recent CMake
@@ -36,6 +39,22 @@ RUN mkdir ~/cmake-install \
        && ./bootstrap -- -DCMAKE_USE_OPENSSL=ON \
        && make -j$(nproc) \
        && make install
+
+# Install SWIG
+ARG SWIG_REPOSITORY=https://github.com/christophe-calmejane/swig.git
+ARG SWIG_BRANCH=aggregated_release
+
+RUN git clone -b $SWIG_BRANCH $SWIG_REPOSITORY --single-branch --depth 1 \
+       && cd swig \
+       && ./autogen.sh \
+       && ./configure --prefix=/usr/local --with-pcre \
+       && make -j$(nproc) \
+       && make install
+
+# Install dotnet 8.0 SDK
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install \
+       dotnet-sdk-8.0 \
+       && rm -rf /var/lib/apt/lists/*
 
 # Add an environment variable to help differentiate between the host and the container
 ENV IN_DOCKER_CONTAINER=1
