@@ -1,9 +1,6 @@
 # Base our image from ubuntu noble
 FROM ubuntu:24.04
 
-# Update apt sources (noble has been moved to old-releases)
-# RUN sed -i -r 's/([a-z]{2}.)?archive.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list && sed -i -r 's/security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
-
 # Install required packages
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install \
        wget \
