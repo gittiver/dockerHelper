@@ -20,6 +20,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install \
        unzip \
        libssl-dev \
        gdb \
+       autoconf automake \
+       libpcre2-dev \
+       bison \
        && rm -rf /var/lib/apt/lists/*
 
 # Install more recent CMake
@@ -53,11 +56,14 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install \
 # Add an environment variable to help differentiate between the host and the container
 ENV IN_DOCKER_CONTAINER=1
 
-# Create a user
+# Create a user (since ubuntu 24.04, a non-root user 'ubuntu' is created by default with uid 1000)
+# Unfortunately all previous helpers are using 'builder' user and paths are set accordingly, so we keep using 'builder' user here
+# We need to delete the default 'ubuntu' user first to free up uid 1000 for compatibility with previous versions (access rights on mounted volumes)
 ARG USERNAME=builder
 ARG PASSWORD=builder
 
-RUN useradd -rm -d /home/"$USERNAME" -s /bin/bash -g root -G sudo -u 1001 "$USERNAME"
+RUN userdel -r ubuntu 2>/dev/null || true
+RUN useradd -rm -d /home/"$USERNAME" -s /bin/bash -g root -G sudo -u 1000 "$USERNAME"
 RUN echo "$PASSWORD\n$PASSWORD" | passwd "$USERNAME"
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
