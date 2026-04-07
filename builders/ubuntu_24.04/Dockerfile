@@ -23,6 +23,10 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install \
        autoconf automake \
        libpcre2-dev \
        bison \
+       file \
+       patchelf \
+       squashfs-tools \
+       libfuse2 \
        && rm -rf /var/lib/apt/lists/*
 
 # Install more recent CMake
