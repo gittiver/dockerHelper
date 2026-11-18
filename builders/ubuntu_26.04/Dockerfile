@@ -75,6 +75,16 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 WORKDIR /home/$USERNAME
 USER $USERNAME
 
+# Install fnm and Node.js LTS
+ENV FNM_DIR=/home/${USERNAME}/.fnm
+ENV PATH=${FNM_DIR}:${PATH}
+
+RUN curl -fsSL https://fnm.vercel.app/install | \
+       bash -s -- --install-dir "${FNM_DIR}" --skip-shell \
+       && fnm install --lts \
+       && fnm default lts-latest \
+       && echo 'eval "$(fnm env)"' >> /home/${USERNAME}/.bashrc
+
 # Set UTF8 locale
 RUN echo "export LANG=en_US.utf8" >> ~/.bashrc
 
